@@ -4,4 +4,4 @@ vendor
 .phpunit.result.cache
 architecture.puml
 architecture.png
-*.txt
+app/Repository/whatisrepository.txt
