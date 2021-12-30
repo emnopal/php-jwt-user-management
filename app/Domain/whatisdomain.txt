@@ -1,3 +1,0 @@
-Directory:
-    Domain is Representation of Table in Database
-    Model is Representation of Request and Response to Web
