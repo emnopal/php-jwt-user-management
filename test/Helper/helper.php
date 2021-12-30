@@ -10,6 +10,7 @@ namespace BadHabit\LoginManagement\App {
 }
 
 namespace BadHabit\LoginManagement\Service {
+
     function setcookie(string $name, string $value)
     {
         echo "$name: $value";

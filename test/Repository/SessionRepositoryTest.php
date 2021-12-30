@@ -2,60 +2,41 @@
 
 namespace BadHabit\LoginManagement\Repository;
 
+use BadHabit\LoginManagement\App\Auth;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Session;
-use BadHabit\LoginManagement\Domain\User;
+use BadHabit\LoginManagement\Service\SessionService;
 use PHPUnit\Framework\TestCase;
 
 class SessionRepositoryTest extends TestCase
 {
 
     private SessionRepository $sessionRepository;
+    private SessionService $sessionService;
 
     public function setUp(): void
     {
         $userRepository = new UserRepository(Database::getConnection());
-        $this->sessionRepository = new SessionRepository(Database::getConnection());
-
-        $this->sessionRepository->deleteAll();
-        $userRepository->deleteAll();
-
-        $user = new User();
-        $user->username = "test";
-        $user->fullName = "Test Account";
-        $user->password = "test123";
-        $user->email = "user@mail.com";
-        $userRepository->save($user);
+        $this->sessionRepository = new SessionRepository(new Auth());
+        $this->sessionService = new SessionService($this->sessionRepository, $userRepository);
     }
 
-    public function testSaveSuccess()
+    public function testGetToken()
     {
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = "test";
-
-        $this->sessionRepository->save($session);
-        $result = $this->sessionRepository->findById($session->id);
-        self::assertEquals($session->id, $result->id);
-        self::assertEquals($session->user_id, $result->user_id);
+        self::assertIsString($this->sessionRepository->getToken('test'));
     }
 
-    public function testDeleteByIdSuccess()
+    public function testDecodeToken()
     {
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = "test";
-
-        $this->sessionRepository->save($session);
-        $this->sessionRepository->deleteById($session->id);
-        $result = $this->sessionRepository->findById($session->id);
-        self::assertNull($result);
+        $token = $this->sessionRepository->getToken('test');
+        $decodedToken = $this->sessionRepository->decodeToken($token);
+        self::assertEquals('test', $decodedToken);
     }
 
-    public function testFindByIdNotFound()
+    public function testGetExpired()
     {
-        $result = $this->sessionRepository->findById("not_found");
-        self::assertNull($result);
+        $token = $this->sessionRepository->getToken('test');
+        $expired = $this->sessionRepository->getExpire($token);
+        self::assertEquals(time() + 3600*24, $expired);
     }
 
 }

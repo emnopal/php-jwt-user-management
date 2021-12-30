@@ -2,31 +2,36 @@
 
 namespace BadHabit\LoginManagement\Controller;
 
+require_once __DIR__ . "/../Helper/helper.php";
+
+use BadHabit\LoginManagement\App\Auth;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Domain\Session;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
 use BadHabit\LoginManagement\Service\SessionService;
+use BadHabit\LoginManagement\Service\UserService;
 use PHPUnit\Framework\TestCase;
 
 class HomeControllerTest extends TestCase
 {
 
     private HomeController $homeController;
-    private SessionRepository $sessionRepository;
     private UserRepository $userRepository;
+    private SessionRepository $sessionRepository;
+    private SessionService $sessionService;
 
     protected function setUp(): void
     {
         $this->homeController = new HomeController();
-        $this->sessionRepository = new SessionRepository(Database::getConnection());
+
         $this->userRepository = new UserRepository(Database::getConnection());
+        $this->sessionRepository = new SessionRepository(new Auth());
+        $this->sessionService = new SessionService($this->sessionRepository, $this->userRepository);
 
-        $this->sessionRepository->deleteAll();
+        $this->sessionService->destroy();
         $this->userRepository->deleteAll();
-
-
     }
 
     public function testGuess(): void
@@ -35,9 +40,8 @@ class HomeControllerTest extends TestCase
         $this->expectOutputRegex("[Login Management]");
     }
 
-    public function testUserLogin():void
+    public function testUserLogin(): void
     {
-
         $user = new User();
         $user->username = "test";
         $user->password = "test";
@@ -46,16 +50,12 @@ class HomeControllerTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $this->homeController->index();
-        $this->expectOutputRegex("[Hello, <br>" . ucwords($user->fullName) ."]");
+        $this->expectOutputRegex("[Hello, <br>" . ucwords($user->fullName) . "]");
     }
 
 

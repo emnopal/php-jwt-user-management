@@ -4,6 +4,7 @@ namespace BadHabit\LoginManagement\Domain;
 
 class Session
 {
-    public string $id;
-    public string $user_id;
+    public function __construct(public string $user_id)
+    {
+    }
 }

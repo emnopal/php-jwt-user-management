@@ -4,8 +4,8 @@ namespace BadHabit\LoginManagement\Controller;
 
 require_once __DIR__ . "/../Helper/helper.php";
 
+use BadHabit\LoginManagement\App\Auth;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Session;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -18,15 +18,17 @@ class UserControllerTest extends TestCase
     private UserController $userController;
     private UserRepository $userRepository;
     private SessionRepository $sessionRepository;
+    private SessionService $sessionService;
 
     protected function setUp(): void
     {
         $this->userController = new UserController();
-
-        $this->sessionRepository = new SessionRepository(Database::getConnection());
-        $this->sessionRepository->deleteAll();
-
         $this->userRepository = new UserRepository(Database::getConnection());
+
+        $this->sessionRepository = new SessionRepository(new Auth());
+        $this->sessionService = new SessionService($this->sessionRepository, $this->userRepository);
+        $this->sessionService->destroy();
+
         $this->userRepository->deleteAll();
 
         // Change the env mode to test
@@ -187,13 +189,9 @@ class UserControllerTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $this->userController->logout();
         $this->expectOutputRegex("[X-BHB-SESSION: ]");
@@ -211,13 +209,9 @@ class UserControllerTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $this->userController->updateProfile();
 
@@ -237,12 +231,9 @@ class UserControllerTest extends TestCase
         $user->email = "user@mail.com";
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $_POST['fullName'] = "test User Update";
         $_POST['email'] = "mail@test.com";
@@ -264,12 +255,9 @@ class UserControllerTest extends TestCase
         $user->email = "user@mail.com";
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $_POST['fullName'] = "";
         $_POST['email'] = "";
@@ -288,13 +276,9 @@ class UserControllerTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $this->userController->updatePassword();
 
@@ -314,12 +298,9 @@ class UserControllerTest extends TestCase
         $user->email = "user@mail.com";
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $_POST['old'] = "test123";
         $_POST['new'] = "test";
@@ -340,12 +321,9 @@ class UserControllerTest extends TestCase
         $user->email = "user@mail.com";
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $_POST['old'] = "test";
         $_POST['new'] = "test456";
@@ -363,12 +341,9 @@ class UserControllerTest extends TestCase
         $user->email = "user@mail.com";
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $_POST['old'] = "test123";
         $_POST['new'] = "";

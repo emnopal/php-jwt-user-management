@@ -4,6 +4,7 @@ namespace BadHabit\LoginManagement\Service;
 
 require_once __DIR__ . '/../Helper/helper.php';
 
+use BadHabit\LoginManagement\App\Auth;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Domain\Session;
 use BadHabit\LoginManagement\Domain\User;
@@ -18,11 +19,11 @@ class SessionServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->sessionRepository = new SessionRepository(Database::getConnection());
+        $this->sessionRepository = new SessionRepository(new Auth());
         $userRepository = new UserRepository(Database::getConnection());
         $this->sessionService = new SessionService($this->sessionRepository, $userRepository);
 
-        $this->sessionRepository->deleteAll();
+        $this->sessionService->destroy();
         $userRepository->deleteAll();
 
         $user = new User();
@@ -36,44 +37,30 @@ class SessionServiceTest extends TestCase
     public function testCreateSession(): void
     {
         $session = $this->sessionService->create("test");
-        $this->expectOutputRegex("[X-BHB-SESSION: $session->id]");
+        $token = $this->sessionRepository->getToken("test");
+        $this->expectOutputRegex("[X-BHB-SESSION: $token]");
 
-        $this->sessionRepository->findById($session->id);
+        $decode = $this->sessionRepository->decodeToken($token);
 
-        self::assertEquals("test", $session->user_id);
+        self::assertEquals("test", $decode);
     }
 
     public function testDestroySession(): void
     {
-
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = "test";
-
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create("test");
+        $token = $this->sessionRepository->getToken("test");
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
         $this->sessionService->destroy();
-
         $this->expectOutputRegex("[X-BHB-SESSION: ]");
-
-        $result = $this->sessionRepository->findById($session->id);
-        self::assertNull($result);
-
     }
 
     public function testCurrentSession(): void
     {
-
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = "test";
-
-        $this->sessionRepository->save($session);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
-
+        $this->sessionService->create("test");
+        $token = $this->sessionRepository->getToken("test");
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
         $user = $this->sessionService->current();
-        self::assertEquals($session->user_id, $user->username);
+        self::assertEquals("test", $user->username);
 
     }
 

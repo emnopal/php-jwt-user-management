@@ -22,36 +22,25 @@ class SessionService
         $this->userRepository = $userRepository;
     }
 
-
-    public function create(string $user_id): Session
+    public function create(string $user_id): bool
     {
-        Database::beginTransaction();
-        try{
+        try {
 
-            $session = new Session();
-            $session->id = uniqid();
-            $session->user_id = $user_id;
-
-            $this->sessionRepository->save($session);
+            $token = $this->sessionRepository->getToken($user_id);
+            $expire = $this->sessionRepository->getExpire($user_id);
 
             // Use cookie to store session id
             // path "/" means the cookie is available for all pages
+            setcookie(self::$COOKIE_NAME, $token, $expire, "/");
 
-            setcookie(self::$COOKIE_NAME, $session->id, time() + (60 * 60 * 24), "/");
-            Database::commitTransaction();
-
-            return $session;
+            return true;
         } catch (\Exception $e) {
-            Database::rollbackTransaction();
             throw $e;
         }
     }
 
     public function destroy()
     {
-        $session_id = $_COOKIE[self::$COOKIE_NAME] ?? "";
-        $this->sessionRepository->deleteById($session_id);
-
         // Delete cookie
         // Set to first epoch in 1970
         // to delete all cookie(s)
@@ -60,14 +49,20 @@ class SessionService
 
     public function current(): ?User
     {
-        $session_id = $_COOKIE[self::$COOKIE_NAME] ?? "";
-        $session = $this->sessionRepository->findById($session_id);
-
-        if (!$session) {
-            return null;
+        if (!isset($_COOKIE[self::$COOKIE_NAME])) {
+            throw new \Exception("No session found");
         }
-
-        return $this->userRepository->findById($session->user_id);
+        if ($_COOKIE[self::$COOKIE_NAME]) {
+            $jwt = $_COOKIE[self::$COOKIE_NAME];
+            try {
+                $payload = $this->sessionRepository->decodeToken($jwt);
+                return $this->userRepository->findById($payload);
+            } catch (\Exception) {
+                throw new \Exception("User is not login");
+            }
+        } else {
+            throw new \Exception("User is not login");
+        }
     }
 
 }

@@ -26,10 +26,6 @@ class UserServiceTest extends TestCase
         $connection = Database::getConnection();
         $this->userRepository = new UserRepository($connection);
         $this->userService = new UserService($this->userRepository);
-
-        $sessionRepository = new SessionRepository($connection);
-
-        $sessionRepository->deleteAll();
         $this->userRepository->deleteAll();
     }
 

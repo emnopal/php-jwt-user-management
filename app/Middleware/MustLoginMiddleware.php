@@ -2,6 +2,7 @@
 
 namespace BadHabit\LoginManagement\Middleware;
 
+use BadHabit\LoginManagement\App\Auth;
 use BadHabit\LoginManagement\App\View;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Repository\SessionRepository;
@@ -16,15 +17,17 @@ class MustLoginMiddleware implements Middleware
     public function __construct()
     {
         $userRepository = new UserRepository(Database::getConnection());
-        $sessionRepository = new SessionRepository(Database::getConnection());
+
+        $auth = new Auth();
+        $sessionRepository = new SessionRepository($auth);
         $this->sessionService = new SessionService(sessionRepository: $sessionRepository, userRepository: $userRepository);
     }
 
     public function before(): void
     {
-        $user = $this->sessionService->current();
-
-        if (!$user || !isset($user)) {
+        try {
+            $user = $this->sessionService->current();
+        } catch (\Exception $e) {
             View::redirect('/users/login');
         }
     }

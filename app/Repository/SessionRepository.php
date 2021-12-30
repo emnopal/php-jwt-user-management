@@ -2,56 +2,65 @@
 
 namespace BadHabit\LoginManagement\Repository;
 
-use BadHabit\LoginManagement\Domain\Session;
+use BadHabit\LoginManagement\App\Auth;
 
 class SessionRepository
 {
 
-    private \PDO $connection;
+    private ?string $url;
+    private Auth $auth;
 
-    public function __construct(\PDO $connection)
+    public function __construct(Auth $auth, ?string $url = "http://localhost/")
     {
-        $this->connection = $connection;
-    }
-
-    public function save(Session $session): Session
-    {
-        $sql = "INSERT INTO sessions(id, user_id) VALUES(?,?)";
-        $statement = $this->connection->prepare($sql);
-        $statement->execute([$session->id, $session->user_id]);
-        return $session;
-    }
-
-    public function findById(string $id): ?Session
-    {
-        $sql = "SELECT id, user_id FROM sessions WHERE id = ?";
-        $statement = $this->connection->prepare($sql);
-        $statement->execute([$id]);
-        try{
-            if($row = $statement->fetch()){
-                $session = new Session();
-                $session->id = $row['id'];
-                $session->user_id = $row['user_id'];
-                return $session;
-            } else {
-                return null;
+        $this->auth = $auth;
+        if ($url) {
+            $this->url = $url;
+        }else {
+            if (isset($_SERVER['PATH_INFO'])){
+                $this->url = $url + $_SERVER['PATH_INFO'];
+            }else{
+                $this->url = $url;
             }
-        } finally {
-            $statement->closeCursor();
+
         }
     }
 
-    public function deleteById(string $id): void
+    private function getJWT(string $user_id): array|string
     {
-        $sql = "DELETE FROM sessions WHERE id = ?";
-        $statement = $this->connection->prepare($sql);
-        $statement->execute([$id]);
+        $data = [
+            'user_id' => $user_id
+        ];
+
+        return $this->auth->encode($this->url, $data);
     }
 
-    public function deleteAll(): void
+    private function decodeJWT(string $token): array|string
     {
-        $sql = "DELETE FROM sessions";
-        $statement = $this->connection->prepare($sql);
-        $statement->execute();
+        return $this->auth->decode($token);
     }
+
+    public function getToken(string $user_id): string
+    {
+//        return $this->getJWT($user_id)['key'];
+        $encodedToken = $this->getJWT($user_id);
+        $encodedResult = &$encodedToken;
+        return $encodedResult['key'];
+    }
+
+    public function decodeToken(string $token): string
+    {
+//        return $this->decodeJWT($token)['user_id'];
+        $decodedToken = $this->decodeJWT($token);
+        $decodedResult = &$decodedToken;
+        return $decodedResult['user_id'];
+    }
+
+    public function getExpire(string $user_id): string
+    {
+//        return $this->getJWT($user_id)['expire'];
+        $encodedToken = $this->getJWT($user_id);
+        $encodedResult = &$encodedToken;
+        return $encodedResult['expire'];
+    }
+
 }

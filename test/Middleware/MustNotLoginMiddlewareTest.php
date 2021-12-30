@@ -4,6 +4,7 @@ namespace BadHabit\LoginManagement\Middleware;
 
 require_once __DIR__ . "/../Helper/helper.php";
 
+use BadHabit\LoginManagement\App\Auth;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Domain\Session;
 use BadHabit\LoginManagement\Domain\User;
@@ -18,6 +19,7 @@ class MustNotLoginMiddlewareTest extends TestCase
     private MustNotLoginMiddleware $mustNotLoginMiddleware;
     private UserRepository $userRepository;
     private SessionRepository $sessionRepository;
+    private SessionService $sessionService;
 
     public function setUp(): void
     {
@@ -25,9 +27,10 @@ class MustNotLoginMiddlewareTest extends TestCase
         putenv("mode=test");
 
         $this->userRepository = new UserRepository(Database::getConnection());
-        $this->sessionRepository = new SessionRepository(Database::getConnection());
+        $this->sessionRepository = new SessionRepository(new Auth());
+        $this->sessionService = new SessionService($this->sessionRepository, $this->userRepository);
 
-        $this->sessionRepository->deleteAll();
+        $this->sessionService->destroy();
         $this->userRepository->deleteAll();
 
     }
@@ -35,7 +38,7 @@ class MustNotLoginMiddlewareTest extends TestCase
     public function testBeforeLogin()
     {
         $this->mustNotLoginMiddleware->before();
-        $this->expectOutputString("");
+        $this->expectOutputRegex("[X-BHB-SESSION: ]");
 
     }
 
@@ -48,12 +51,9 @@ class MustNotLoginMiddlewareTest extends TestCase
         $user->email = "user@test.com";
         $this->userRepository->save($user);
 
-        $session = new Session();
-        $session->id = uniqid();
-        $session->user_id = $user->username;
-        $this->sessionRepository->save($session);
-
-        $_COOKIE[SessionService::$COOKIE_NAME] = $session->id;
+        $this->sessionService->create($user->username);
+        $token = $this->sessionRepository->getToken($user->username);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
 
         $this->mustNotLoginMiddleware->before();
         $this->expectOutputRegex("[Location: ]");

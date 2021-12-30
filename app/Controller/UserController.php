@@ -2,6 +2,7 @@
 
 namespace BadHabit\LoginManagement\Controller;
 
+use BadHabit\LoginManagement\App\Auth;
 use BadHabit\LoginManagement\App\View;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Exception\ValidationException;
@@ -28,7 +29,8 @@ class UserController
         $userService = new UserService($userRepository);
         $this->userService = $userService;
 
-        $sessionRepository = new SessionRepository($connection);
+        $auth = new Auth();
+        $sessionRepository = new SessionRepository($auth);
         $this->sessionService = new SessionService($sessionRepository, $userRepository);
 
     }
