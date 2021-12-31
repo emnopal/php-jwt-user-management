@@ -16,15 +16,14 @@ use PHPUnit\Framework\TestCase;
 class MustLoginMiddlewareTest extends TestCase
 {
 
-    private MustAdminMiddleware $mustLoginMiddleware;
+    private MustLoginMiddleware $mustLoginMiddleware;
     private UserRepository $userRepository;
     private SessionRepository $sessionRepository;
     private SessionService $sessionService;
 
     public function setUp(): void
     {
-        $this->mustLoginMiddleware = new MustAdminMiddleware();
-        putenv("mode=test");
+        $this->mustLoginMiddleware = new MustLoginMiddleware();
 
         $this->userRepository = new UserRepository(Database::getConnection());
         $this->sessionRepository = new SessionRepository(new Handler());
@@ -32,7 +31,6 @@ class MustLoginMiddlewareTest extends TestCase
 
         $this->sessionService->destroy();
         $this->userRepository->deleteAll();
-
     }
 
     public function testBeforeLogin()
@@ -49,15 +47,50 @@ class MustLoginMiddlewareTest extends TestCase
         $user->fullName = "test";
         $user->password = "test";
         $user->email = "user@mail.com";
+        $user->role = "user";
+
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $key = $token->key;
         $cookie_name = SessionService::$COOKIE_NAME;
+        $_COOKIE[$cookie_name] = $key;
+
 
         $this->mustLoginMiddleware->before();
-        $this->expectOutputRegex("[$cookie_name: $token]");
+        $this->expectOutputRegex("[$cookie_name: $key]");
+
+    }
+
+    public function testBeforeLoggedInAdmin()
+    {
+        $user = new User();
+        $user->username = "test";
+        $user->fullName = "test";
+        $user->password = "test";
+        $user->email = "user@mail.com";
+        $user->role = "admin";
+
+        $this->userRepository->save($user);
+
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $key = $token->key;
+        $cookie_name = SessionService::$COOKIE_NAME;
+        $_COOKIE[$cookie_name] = $key;
+
+
+        $this->mustLoginMiddleware->before();
+        $this->expectOutputRegex("[$cookie_name: $key]");
 
     }
 }

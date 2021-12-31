@@ -49,11 +49,40 @@ class MustNotLoginMiddlewareTest extends TestCase
         $user->fullName = "test";
         $user->password = "test";
         $user->email = "user@test.com";
+        $user->role = "user";
+
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
+
+        $this->mustNotLoginMiddleware->before();
+        $this->expectOutputRegex("[Location: ]");
+    }
+
+    public function testBeforeLoggedInAdmin()
+    {
+        $user = new User();
+        $user->username = "test";
+        $user->fullName = "test";
+        $user->password = "test";
+        $user->email = "user@test.com";
+        $user->role = "admin";
+
+        $this->userRepository->save($user);
+
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $this->mustNotLoginMiddleware->before();
         $this->expectOutputRegex("[Location: ]");

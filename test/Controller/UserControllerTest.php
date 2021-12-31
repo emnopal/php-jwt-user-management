@@ -6,6 +6,7 @@ require_once __DIR__ . "/../Helper/helper.php";
 
 use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
+use BadHabit\LoginManagement\Domain\DecodeSession;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -127,7 +128,6 @@ class UserControllerTest extends TestCase
         $this->userController->postLogin();
         $this->expectOutputRegex("[X-BHB-SESSION: ]");
         $this->expectOutputRegex("[Location: /]");
-
     }
 
     public function testLoginValidationError()
@@ -186,12 +186,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
-
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $this->userController->logout();
         $this->expectOutputRegex("[X-BHB-SESSION: ]");
@@ -206,12 +210,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
-
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $this->userController->updateProfile();
 
@@ -229,11 +237,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $_POST['fullName'] = "test User Update";
         $_POST['email'] = "mail@test.com";
@@ -253,11 +266,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $_POST['fullName'] = "";
         $_POST['email'] = "";
@@ -273,12 +291,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
-
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $this->userController->updatePassword();
 
@@ -296,11 +318,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $_POST['old'] = "test123";
         $_POST['new'] = "test";
@@ -319,11 +346,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $_POST['old'] = "test";
         $_POST['new'] = "test456";
@@ -339,11 +371,16 @@ class UserControllerTest extends TestCase
         $user->fullName = "test User";
         $user->password = password_hash("test123", PASSWORD_BCRYPT);
         $user->email = "user@mail.com";
+        $user->role = "user";
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $_POST['old'] = "test123";
         $_POST['new'] = "";

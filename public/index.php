@@ -26,7 +26,7 @@ Router::add('POST', '/users/profile', UserController::class, 'postUpdateProfile'
 Router::add('GET', '/users/password', UserController::class, 'updatePassword', [MustLoginMiddleware::class]);
 Router::add('POST', '/users/password', UserController::class, 'postUpdatePassword', [MustLoginMiddleware::class]);
 
-Router::add('GET', '/admin', AdminController::class, 'index', [MustAdminMiddleware::class]);
+Router::add('GET', '/admin', AdminController::class, 'index', [MustLoginMiddleware::class]);
 
 
 Router::run();

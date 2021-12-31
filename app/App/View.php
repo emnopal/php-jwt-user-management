@@ -10,6 +10,7 @@ class View
         require __DIR__ . '/../View/header.php';
         require __DIR__ . '/../View/' . $view . '.php';
         require __DIR__ . '/../View/footer.php';
+        getenv('mode') != 'test' ?? exit();
     }
 
     public static function redirect(string $url): void
