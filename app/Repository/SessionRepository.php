@@ -17,8 +17,13 @@ class SessionRepository
     public function __construct(Handler $handler, ?string $url = null)
     {
         $this->auth = $handler;
+
         if (!$url) {
-            $this->url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            if (!isset($_SERVER['HTTP_HOST']) && !isset($_SERVER['REQUEST_URI'])) {
+                $this->url = "https://example.com";
+            } else {
+                $this->url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            }
         } else {
             $this->url = $url;
         }

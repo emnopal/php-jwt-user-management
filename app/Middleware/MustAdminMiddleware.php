@@ -31,7 +31,11 @@ class MustAdminMiddleware implements Middleware
             View::render("not_found", [
                 'url' => "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"
             ]);
-            exit;
+
+            // Problem with PHPUnit Test, the PHPUnit Test
+            // will stop the execution prematurely
+            // So we need to use this logic to avoid error
+            getenv('mode') != 'test' ?? exit();
         }
     }
 

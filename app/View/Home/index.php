@@ -6,7 +6,7 @@
                 </div>
             <div class="p-4 p-md-5 border rounded-3 bg-light">
                 <div class="form-floating mb-3">
-                    <a href="/users/register" class="w-100 btn btn-lg btn-primary">Create an Account</a>
+                    <a href="/users/register" class="w-100 btn btn-lg btn-primary">Create Account</a>
                 </div>
                 <div class="form-floating mb-3">
                     <a href="/users/login" class="w-100 btn btn-lg btn-primary">Login</a>

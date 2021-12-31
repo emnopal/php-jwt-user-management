@@ -27,7 +27,7 @@ class HomeControllerTest extends TestCase
         $this->homeController = new HomeController();
 
         $this->userRepository = new UserRepository(Database::getConnection());
-        $this->sessionRepository = new SessionRepository(new Handler());
+        $this->sessionRepository = new SessionRepository(new Handler(), 'test');
         $this->sessionService = new SessionService($this->sessionRepository, $this->userRepository);
 
         $this->sessionService->destroy();
@@ -47,12 +47,17 @@ class HomeControllerTest extends TestCase
         $user->password = "test";
         $user->fullName = "Test User";
         $user->email = "test@gmail.com";
+        $user->role = "user";
 
         $this->userRepository->save($user);
 
-        $this->sessionService->create($user->username);
-        $token = $this->sessionRepository->getToken($user->username);
-        $_COOKIE[SessionService::$COOKIE_NAME] = $token;
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $user->username;
+        $decodeSession->role = $user->role;
+
+        $this->sessionService->create($decodeSession);
+        $token = $this->sessionRepository->getToken($decodeSession);
+        $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $this->homeController->index();
         $this->expectOutputRegex("[Hello, <br>" . ucwords($user->fullName) . "]");
