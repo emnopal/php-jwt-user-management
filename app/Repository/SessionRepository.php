@@ -41,7 +41,6 @@ class SessionRepository
 
     public function getToken(string $user_id): string
     {
-//        return $this->getJWT($user_id)['key'];
         $encodedToken = $this->getJWT($user_id);
         $encodedResult = &$encodedToken;
         return $encodedResult['key'];
@@ -49,7 +48,6 @@ class SessionRepository
 
     public function decodeToken(string $token): string
     {
-//        return $this->decodeJWT($token)['user_id'];
         $decodedToken = $this->decodeJWT($token);
         $decodedResult = &$decodedToken;
         return $decodedResult['user_id'];
@@ -57,7 +55,6 @@ class SessionRepository
 
     public function getExpire(string $user_id): string
     {
-//        return $this->getJWT($user_id)['expire'];
         $encodedToken = $this->getJWT($user_id);
         $encodedResult = &$encodedToken;
         return $encodedResult['expire'];
