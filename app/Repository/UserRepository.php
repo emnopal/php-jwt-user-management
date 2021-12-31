@@ -17,14 +17,15 @@ class UserRepository
 
     public function save(User $user): User
     {
-        $sql = "INSERT INTO users(username, password, fullName, email) VALUES (?,?,?,?)";
+        $sql = "INSERT INTO users(username, password, fullName, email, role) VALUES (?,?,?,?,?)";
 
         $statement = $this->connection->prepare($sql);
         $statement->execute([
             $user->username,
             $user->password,
             $user->fullName,
-            $user->email
+            $user->email,
+            $user->role
         ]);
         return $user;
 
@@ -33,7 +34,7 @@ class UserRepository
 
     public function findById(string $id): ?User
     {
-        $sql = "SELECT username, password, fullName, email FROM users WHERE username = ?";
+        $sql = "SELECT username, password, fullName, email, role FROM users WHERE username = ?";
         try {
             $statement = $this->connection->prepare($sql);
             $statement->execute([$id]);
@@ -43,6 +44,7 @@ class UserRepository
                 $user->password = $row['password'];
                 $user->fullName = $row['fullName'];
                 $user->email = $row['email'];
+                $user->role = $row['role'];
                 return $user;
             }
             return null;

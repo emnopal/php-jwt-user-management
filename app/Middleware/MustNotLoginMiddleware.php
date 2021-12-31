@@ -2,7 +2,7 @@
 
 namespace BadHabit\LoginManagement\Middleware;
 
-use BadHabit\LoginManagement\App\Auth;
+use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\App\View;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Repository\SessionRepository;
@@ -18,9 +18,9 @@ class MustNotLoginMiddleware implements Middleware
     {
         $userRepository = new UserRepository(Database::getConnection());
 
-        $auth = new Auth();
+        $auth = new Handler();
         $sessionRepository = new SessionRepository($auth);
-        $this->sessionService = new SessionService(sessionRepository: $sessionRepository, userRepository: $userRepository);
+        $this->sessionService = new SessionService($sessionRepository, $userRepository);
     }
 
     public function before(): void

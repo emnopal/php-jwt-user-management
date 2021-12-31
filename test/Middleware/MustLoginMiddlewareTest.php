@@ -4,9 +4,9 @@ namespace BadHabit\LoginManagement\Middleware;
 
 require_once __DIR__ . "/../Helper/helper.php";
 
-use BadHabit\LoginManagement\App\Auth;
+use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Session;
+use BadHabit\LoginManagement\Domain\DecodeSession;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -16,18 +16,18 @@ use PHPUnit\Framework\TestCase;
 class MustLoginMiddlewareTest extends TestCase
 {
 
-    private MustLoginMiddleware $mustLoginMiddleware;
+    private MustAdminMiddleware $mustLoginMiddleware;
     private UserRepository $userRepository;
     private SessionRepository $sessionRepository;
     private SessionService $sessionService;
 
     public function setUp(): void
     {
-        $this->mustLoginMiddleware = new MustLoginMiddleware();
+        $this->mustLoginMiddleware = new MustAdminMiddleware();
         putenv("mode=test");
 
         $this->userRepository = new UserRepository(Database::getConnection());
-        $this->sessionRepository = new SessionRepository(new Auth());
+        $this->sessionRepository = new SessionRepository(new Handler());
         $this->sessionService = new SessionService($this->sessionRepository, $this->userRepository);
 
         $this->sessionService->destroy();

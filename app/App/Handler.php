@@ -4,10 +4,14 @@ namespace BadHabit\LoginManagement\App;
 
 require_once __DIR__ . "/../../config/DotEnv.php";
 
+use BadHabit\LoginManagement\Domain\Decode;
+use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Domain\Encode;
+use BadHabit\LoginManagement\Domain\EncodeSession;
 use DotEnv;
 use Firebase\JWT\JWT;
 
-class Auth
+class Handler
 {
     /**
      * Handling all the JWT actions
@@ -47,7 +51,7 @@ class Auth
 
     }
 
-    public function encode(string $iss, array $data): array|string
+    public function encode(Encode $encode): EncodeSession
     {
 
         /*
@@ -59,8 +63,8 @@ class Auth
 
         $this->token = [
             // identifier to the token (who issued the token)
-            'iss' => $iss,
-            'aud' => $iss,
+            'iss' => $encode->iss,
+            'aud' => $encode->iss,
 
             // current timestamp to the token (when the token was issued)
             'iat' => $this->issuedAt,
@@ -69,30 +73,24 @@ class Auth
             'exp' => $this->expireAt,
 
             // payload
-            'data' => $data
+            'data' => $encode->data
         ];
 
-        try {
-            $this->jwt = JWT::encode($this->token, $this->jwt_secret);
-
-            return [
-                'issued' => $this->issuedAt,
-                'expire' => $this->expireAt,
-                'key' => $this->jwt
-            ];
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-
+        $this->jwt = JWT::encode($this->token, $this->jwt_secret);
+        $encodeSession = new EncodeSession();
+        $encodeSession->key = $this->jwt;
+        $encodeSession->expires = $this->expireAt;
+        $encodeSession->issued = $this->issuedAt;
+        $encodeSession->data = $encode->data;
+        return $encodeSession;
     }
 
-    public function decode(string $jwt_token): array|string
+    public function decode(Decode $decode): DecodeSession
     {
-        try {
-            $decode = JWT::decode($jwt_token, $this->jwt_secret, ['HS256']);
-            return (array)$decode->data;
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
+        $decode = JWT::decode($decode->token, $this->jwt_secret, ['HS256']);
+        $decodeSession = new DecodeSession();
+        $decodeSession->user_id = $decode->data->user_id;
+        $decodeSession->role = $decode->data->role;
+        return $decodeSession;
     }
 }

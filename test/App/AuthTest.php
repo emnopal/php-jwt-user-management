@@ -2,7 +2,7 @@
 
 namespace BadHabit\LoginManagement\App;
 
-use BadHabit\LoginManagement\App\Auth;
+use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Service\SessionService;
 use PHPUnit\Framework\TestCase;
@@ -10,11 +10,11 @@ use PHPUnit\Framework\TestCase;
 class AuthTest extends TestCase
 {
 
-    private Auth $auth;
+    private Handler $auth;
 
     protected function setUp(): void
     {
-        $this->auth = new Auth();
+        $this->auth = new Handler();
     }
 
     public function testEncode()

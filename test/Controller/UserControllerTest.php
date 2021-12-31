@@ -4,7 +4,7 @@ namespace BadHabit\LoginManagement\Controller;
 
 require_once __DIR__ . "/../Helper/helper.php";
 
-use BadHabit\LoginManagement\App\Auth;
+use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
@@ -25,7 +25,7 @@ class UserControllerTest extends TestCase
         $this->userController = new UserController();
         $this->userRepository = new UserRepository(Database::getConnection());
 
-        $this->sessionRepository = new SessionRepository(new Auth());
+        $this->sessionRepository = new SessionRepository(new Handler());
         $this->sessionService = new SessionService($this->sessionRepository, $this->userRepository);
         $this->sessionService->destroy();
 

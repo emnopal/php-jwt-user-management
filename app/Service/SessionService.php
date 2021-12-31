@@ -3,7 +3,8 @@
 namespace BadHabit\LoginManagement\Service;
 
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Session;
+use BadHabit\LoginManagement\Domain\Decode;
+use BadHabit\LoginManagement\Domain\DecodeSession;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -22,16 +23,15 @@ class SessionService
         $this->userRepository = $userRepository;
     }
 
-    public function create(string $user_id): bool
+    public function create(DecodeSession $decodeSession): bool
     {
         try {
 
-            $token = $this->sessionRepository->getToken($user_id);
-            $expire = $this->sessionRepository->getExpire($user_id);
+            $token = $this->sessionRepository->getToken($decodeSession);
 
             // Use cookie to store session id
             // path "/" means the cookie is available for all pages
-            setcookie(self::$COOKIE_NAME, $token, $expire, "/");
+            setcookie(self::$COOKIE_NAME, $token->key, $token->expires, "/");
 
             return true;
         } catch (\Exception $e) {
@@ -55,8 +55,34 @@ class SessionService
         if ($_COOKIE[self::$COOKIE_NAME]) {
             $jwt = $_COOKIE[self::$COOKIE_NAME];
             try {
-                $payload = $this->sessionRepository->decodeToken($jwt);
-                return $this->userRepository->findById($payload);
+                $decode = new Decode();
+                $decode->token = $jwt;
+                $payload = $this->sessionRepository->decodeToken($decode);
+                return $this->userRepository->findById($payload->user_id);
+            } catch (\Exception) {
+                throw new \Exception("User is not login");
+            }
+        } else {
+            throw new \Exception("User is not login");
+        }
+    }
+
+    public function currentAdmin(): ?User
+    {
+        if (!isset($_COOKIE[self::$COOKIE_NAME])) {
+            throw new \Exception("No session found");
+        }
+        if ($_COOKIE[self::$COOKIE_NAME]) {
+            $jwt = $_COOKIE[self::$COOKIE_NAME];
+            try {
+                $decode = new Decode();
+                $decode->token = $jwt;
+                $payload = $this->sessionRepository->decodeToken($decode);
+                if ($payload->role == 'admin'){
+                    return $this->userRepository->findById($payload->user_id);
+                } else {
+                    throw new \Exception("User is not admin");
+                }
             } catch (\Exception) {
                 throw new \Exception("User is not login");
             }

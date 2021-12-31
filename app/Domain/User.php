@@ -8,4 +8,5 @@ class User
     public string $password;
     public string $fullName;
     public string $email;
+    public string $role = 'user';
 }

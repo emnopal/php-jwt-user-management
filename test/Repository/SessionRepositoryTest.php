@@ -2,7 +2,7 @@
 
 namespace BadHabit\LoginManagement\Repository;
 
-use BadHabit\LoginManagement\App\Auth;
+use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Service\SessionService;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ class SessionRepositoryTest extends TestCase
     public function setUp(): void
     {
         $userRepository = new UserRepository(Database::getConnection());
-        $this->sessionRepository = new SessionRepository(new Auth());
+        $this->sessionRepository = new SessionRepository(new Handler());
         $this->sessionService = new SessionService($this->sessionRepository, $userRepository);
     }
 

@@ -2,9 +2,10 @@
 
 namespace BadHabit\LoginManagement\Controller;
 
-use BadHabit\LoginManagement\App\Auth;
+use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\App\View;
 use BadHabit\LoginManagement\Config\Database;
+use BadHabit\LoginManagement\Domain\DecodeSession;
 use BadHabit\LoginManagement\Exception\ValidationException;
 use BadHabit\LoginManagement\Model\UserLoginRequest;
 use BadHabit\LoginManagement\Model\UserPasswordRequest;
@@ -29,7 +30,7 @@ class UserController
         $userService = new UserService($userRepository);
         $this->userService = $userService;
 
-        $auth = new Auth();
+        $auth = new Handler();
         $sessionRepository = new SessionRepository($auth);
         $this->sessionService = new SessionService($sessionRepository, $userRepository);
 
@@ -81,8 +82,15 @@ class UserController
 
         try {
             $response = $this->userService->login($request);
-            $this->sessionService->create($response->user->username); // automate create cookie
-            View::redirect('/');
+            $session = new DecodeSession();
+            $session->user_id = $response->user->username;
+            $session->role = $response->user->role;
+            $this->sessionService->create($session); // automate create cookie
+            if ($response->user->role == 'admin') {
+                View::redirect('/admin');
+            } else {
+                View::redirect('/');
+            }
         } catch (ValidationException | \Exception $e) {
             // Handling error
             View::render('User/login', [

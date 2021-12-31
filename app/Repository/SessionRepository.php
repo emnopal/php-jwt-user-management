@@ -2,62 +2,39 @@
 
 namespace BadHabit\LoginManagement\Repository;
 
-use BadHabit\LoginManagement\App\Auth;
+use BadHabit\LoginManagement\App\Handler;
+use BadHabit\LoginManagement\Domain\Decode;
+use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Domain\Encode;
+use BadHabit\LoginManagement\Domain\EncodeSession;
 
 class SessionRepository
 {
 
     private ?string $url;
-    private Auth $auth;
+    private Handler $auth;
 
-    public function __construct(Auth $auth, ?string $url = "http://localhost/")
+    public function __construct(Handler $handler, ?string $url = null)
     {
-        $this->auth = $auth;
-        if ($url) {
+        $this->auth = $handler;
+        if (!$url) {
+            $this->url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        } else {
             $this->url = $url;
-        }else {
-            if (isset($_SERVER['PATH_INFO'])){
-                $this->url = $url + $_SERVER['PATH_INFO'];
-            }else{
-                $this->url = $url;
-            }
-
         }
     }
 
-    private function getJWT(string $user_id): array|string
+    public function getToken(DecodeSession $decodeSession): EncodeSession
     {
-        $data = [
-            'user_id' => $user_id
-        ];
-
-        return $this->auth->encode($this->url, $data);
+        $encode = new Encode();
+        $encode->iss = $this->url;
+        $encode->data = $decodeSession;
+        return $this->auth->encode($encode);
     }
 
-    private function decodeJWT(string $token): array|string
+    public function decodeToken(Decode $decode): DecodeSession
     {
-        return $this->auth->decode($token);
-    }
-
-    public function getToken(string $user_id): string
-    {
-        $encodedToken = $this->getJWT($user_id);
-        $encodedResult = &$encodedToken;
-        return $encodedResult['key'];
-    }
-
-    public function decodeToken(string $token): string
-    {
-        $decodedToken = $this->decodeJWT($token);
-        $decodedResult = &$decodedToken;
-        return $decodedResult['user_id'];
-    }
-
-    public function getExpire(string $user_id): string
-    {
-        $encodedToken = $this->getJWT($user_id);
-        $encodedResult = &$encodedToken;
-        return $encodedResult['expire'];
+        return $this->auth->decode($decode);
     }
 
 }

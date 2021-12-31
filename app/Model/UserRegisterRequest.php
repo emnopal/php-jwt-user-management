@@ -8,4 +8,5 @@ class UserRegisterRequest
     public ?string $password = null;
     public ?string $fullName = null;
     public ?string $email = null;
+    public string $role = 'user';
 }
