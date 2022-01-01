@@ -16,6 +16,8 @@ class Handler
     /**
      * Handling all the JWT actions
      * like encoding and decoding tokens
+     *
+     * Source from: https://www.w3jar.com/how-to-implement-the-jwt-with-php/
      */
 
     protected string $jwt_secret;
