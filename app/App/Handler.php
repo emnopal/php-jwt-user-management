@@ -4,10 +4,10 @@ namespace BadHabit\LoginManagement\App;
 
 require_once __DIR__ . "/../../config/DotEnv.php";
 
-use BadHabit\LoginManagement\Domain\Decode;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Model\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\Encode;
-use BadHabit\LoginManagement\Domain\EncodeSession;
+use BadHabit\LoginManagement\Model\EncodeSession;
 use DotEnv;
 use Firebase\JWT\JWT;
 
@@ -85,10 +85,10 @@ class Handler
         return $encodeSession;
     }
 
-    public function decode(Decode $decode): DecodeSession
+    public function decode(DecodeSession $decode): Decoded
     {
         $decode = JWT::decode($decode->token, $this->jwt_secret, ['HS256']);
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $decode->data->user_id;
         $decodeSession->role = $decode->data->role;
         return $decodeSession;

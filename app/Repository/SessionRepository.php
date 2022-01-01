@@ -3,10 +3,10 @@
 namespace BadHabit\LoginManagement\Repository;
 
 use BadHabit\LoginManagement\App\Handler;
-use BadHabit\LoginManagement\Domain\Decode;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Model\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\Encode;
-use BadHabit\LoginManagement\Domain\EncodeSession;
+use BadHabit\LoginManagement\Model\EncodeSession;
 
 class SessionRepository
 {
@@ -29,17 +29,17 @@ class SessionRepository
         }
     }
 
-    public function getToken(DecodeSession $decodeSession): EncodeSession
+    public function getToken(Decoded $decoded): EncodeSession
     {
         $encode = new Encode();
         $encode->iss = $this->url;
-        $encode->data = $decodeSession;
+        $encode->data = $decoded;
         return $this->auth->encode($encode);
     }
 
-    public function decodeToken(Decode $decode): DecodeSession
+    public function decodeToken(DecodeSession $decodeSession): Decoded
     {
-        return $this->auth->decode($decode);
+        return $this->auth->decode($decodeSession);
     }
 
 }

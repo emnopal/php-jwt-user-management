@@ -5,7 +5,7 @@ namespace BadHabit\LoginManagement\Controller;
 use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\App\View;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Exception\ValidationException;
 use BadHabit\LoginManagement\Model\UserLoginRequest;
 use BadHabit\LoginManagement\Model\UserPasswordRequest;
@@ -82,7 +82,7 @@ class UserController
 
         try {
             $response = $this->userService->login($request);
-            $session = new DecodeSession();
+            $session = new Decoded();
             $session->user_id = $response->user->username;
             $session->role = $response->user->role;
             $this->sessionService->create($session); // automate create cookie

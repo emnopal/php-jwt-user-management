@@ -2,9 +2,8 @@
 
 namespace BadHabit\LoginManagement\Service;
 
-use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Decode;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Model\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -23,11 +22,11 @@ class SessionService
         $this->userRepository = $userRepository;
     }
 
-    public function create(DecodeSession $decodeSession): bool
+    public function create(Decoded $decoded): bool
     {
         try {
 
-            $token = $this->sessionRepository->getToken($decodeSession);
+            $token = $this->sessionRepository->getToken($decoded);
 
             // Use cookie to store session id
             // path "/" means the cookie is available for all pages
@@ -55,9 +54,9 @@ class SessionService
         if ($_COOKIE[self::$COOKIE_NAME]) {
             $jwt = $_COOKIE[self::$COOKIE_NAME];
             try {
-                $decode = new Decode();
-                $decode->token = $jwt;
-                $payload = $this->sessionRepository->decodeToken($decode);
+                $decodeSession = new DecodeSession();
+                $decodeSession->token = $jwt;
+                $payload = $this->sessionRepository->decodeToken($decodeSession);
                 return $this->userRepository->findById($payload->user_id);
             } catch (\Exception) {
                 throw new \Exception("User is not login");
@@ -75,9 +74,9 @@ class SessionService
         if ($_COOKIE[self::$COOKIE_NAME]) {
             $jwt = $_COOKIE[self::$COOKIE_NAME];
             try {
-                $decode = new Decode();
-                $decode->token = $jwt;
-                $payload = $this->sessionRepository->decodeToken($decode);
+                $decodeSession = new DecodeSession();
+                $decodeSession->token = $jwt;
+                $payload = $this->sessionRepository->decodeToken($decodeSession);
                 if ($payload->role == 'admin'){
                     return $this->userRepository->findById($payload->user_id);
                 } else {

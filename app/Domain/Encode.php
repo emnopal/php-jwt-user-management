@@ -5,5 +5,5 @@ namespace BadHabit\LoginManagement\Domain;
 class Encode
 {
     public string $iss;
-    public DecodeSession $data;
+    public Decoded $data;
 }

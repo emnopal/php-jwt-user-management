@@ -6,8 +6,8 @@ require_once __DIR__ . '/../Helper/helper.php';
 
 use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Decode;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Model\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -39,7 +39,7 @@ class SessionServiceTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodedSession = new DecodeSession();
+        $decodedSession = new Decoded();
         $decodedSession->user_id = $user->username;
         $decodedSession->role = $user->role;
 
@@ -49,7 +49,7 @@ class SessionServiceTest extends TestCase
 
         $this->expectOutputRegex("[X-BHB-SESSION: $key]");
 
-        $decode = new Decode();
+        $decode = new DecodeSession();
         $decode->token = $key;
         $decodedToken = $this->sessionRepository->decodeToken($decode);
 
@@ -67,7 +67,7 @@ class SessionServiceTest extends TestCase
         $user->role = "admin";
         $this->userRepository->save($user);
 
-        $decodedSession = new DecodeSession();
+        $decodedSession = new Decoded();
         $decodedSession->user_id = $user->username;
         $decodedSession->role = $user->role;
 
@@ -77,7 +77,7 @@ class SessionServiceTest extends TestCase
 
         $this->expectOutputRegex("[X-BHB-SESSION: $key]");
 
-        $decode = new Decode();
+        $decode = new DecodeSession();
         $decode->token = $key;
         $decodedToken = $this->sessionRepository->decodeToken($decode);
 
@@ -95,7 +95,7 @@ class SessionServiceTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodedSession = new DecodeSession();
+        $decodedSession = new Decoded();
         $decodedSession->user_id = $user->username;
         $decodedSession->role = $user->role;
 
@@ -118,7 +118,7 @@ class SessionServiceTest extends TestCase
         $user->role = "admin";
         $this->userRepository->save($user);
 
-        $decodedSession = new DecodeSession();
+        $decodedSession = new Decoded();
         $decodedSession->user_id = $user->username;
         $decodedSession->role = $user->role;
 
@@ -141,7 +141,7 @@ class SessionServiceTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodedSession = new DecodeSession();
+        $decodedSession = new Decoded();
         $decodedSession->user_id = $user->username;
         $decodedSession->role = $user->role;
 
@@ -165,7 +165,7 @@ class SessionServiceTest extends TestCase
         $user->role = "admin";
         $this->userRepository->save($user);
 
-        $decodedSession = new DecodeSession();
+        $decodedSession = new Decoded();
         $decodedSession->user_id = $user->username;
         $decodedSession->role = $user->role;
 

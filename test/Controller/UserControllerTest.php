@@ -6,7 +6,7 @@ require_once __DIR__ . "/../Helper/helper.php";
 
 use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -189,7 +189,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 
@@ -213,7 +213,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 
@@ -240,7 +240,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 
@@ -269,7 +269,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 
@@ -294,7 +294,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 
@@ -321,7 +321,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 
@@ -349,7 +349,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 
@@ -374,7 +374,7 @@ class UserControllerTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 

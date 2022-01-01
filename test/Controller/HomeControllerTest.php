@@ -6,12 +6,11 @@ require_once __DIR__ . "/../Helper/helper.php";
 
 use BadHabit\LoginManagement\App\Handler;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
 use BadHabit\LoginManagement\Service\SessionService;
-use BadHabit\LoginManagement\Service\UserService;
 use PHPUnit\Framework\TestCase;
 
 class HomeControllerTest extends TestCase
@@ -51,7 +50,7 @@ class HomeControllerTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = $user->username;
         $decodeSession->role = $user->role;
 

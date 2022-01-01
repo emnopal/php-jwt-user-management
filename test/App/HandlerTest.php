@@ -2,10 +2,10 @@
 
 namespace BadHabit\LoginManagement\App;
 
-use BadHabit\LoginManagement\Domain\Decode;
-use BadHabit\LoginManagement\Domain\DecodeSession;
+use BadHabit\LoginManagement\Model\DecodeSession;
+use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\Encode;
-use BadHabit\LoginManagement\Domain\EncodeSession;
+use BadHabit\LoginManagement\Model\EncodeSession;
 use PHPUnit\Framework\TestCase;
 
 class HandlerTest extends TestCase
@@ -14,7 +14,7 @@ class HandlerTest extends TestCase
     public function testEncode()
     {
         // Get Session of User
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = 'test';
         $decodeSession->role = 'user';
 
@@ -32,7 +32,7 @@ class HandlerTest extends TestCase
     public function testDecode()
     {
         // Get Session of User
-        $decodeSession = new DecodeSession();
+        $decodeSession = new Decoded();
         $decodeSession->user_id = 'test';
         $decodeSession->role = 'user';
 
@@ -44,12 +44,12 @@ class HandlerTest extends TestCase
         $handler = new Handler();
         $token = $handler->encode($encode);
 
-        $decode = new Decode();
+        $decode = new DecodeSession();
         $decode->token = $token->key;
 
         $key = $handler->decode($decode);
 
-        self::assertInstanceOf(DecodeSession::class, $key);
+        self::assertInstanceOf(Decoded::class, $key);
         self::assertEquals('test', $key->user_id);
         self::assertEquals('user', $key->role);
     }
