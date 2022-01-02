@@ -2,21 +2,22 @@
 
 namespace BadHabit\LoginManagement\Repository;
 
-use BadHabit\LoginManagement\App\Handler;
-use BadHabit\LoginManagement\Model\DecodeSession;
-use BadHabit\LoginManagement\Domain\Decoded;
+use BadHabit\LoginManagement\Auth\Handler;
+use BadHabit\LoginManagement\Domain\UserSession;
+use BadHabit\LoginManagement\Model\DecodedSession;
+use BadHabit\LoginManagement\Domain\Decode;
 use BadHabit\LoginManagement\Domain\Encode;
-use BadHabit\LoginManagement\Model\EncodeSession;
+use BadHabit\LoginManagement\Model\EncodedSession;
 
 class SessionRepository
 {
 
     private ?string $url;
-    private Handler $auth;
+    private Handler $handler;
 
     public function __construct(Handler $handler, ?string $url = null)
     {
-        $this->auth = $handler;
+        $this->handler = $handler;
 
         if (!$url) {
             if (!isset($_SERVER['HTTP_HOST']) && !isset($_SERVER['REQUEST_URI'])) {
@@ -29,17 +30,18 @@ class SessionRepository
         }
     }
 
-    public function getToken(Decoded $decoded): EncodeSession
+    public function getToken(UserSession $userSession): EncodedSession
     {
         $encode = new Encode();
         $encode->iss = $this->url;
-        $encode->data = $decoded;
-        return $this->auth->encode($encode);
+        $encode->userSession = $userSession;
+
+        return $this->handler->encode($encode);
     }
 
-    public function decodeToken(DecodeSession $decodeSession): Decoded
+    public function decodeToken(Decode $decode): DecodedSession
     {
-        return $this->auth->decode($decodeSession);
+        return $this->handler->decode($decode);
     }
 
 }

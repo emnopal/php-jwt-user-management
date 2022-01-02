@@ -1,13 +1,13 @@
 <?php
 
-namespace BadHabit\LoginManagement\App;
+namespace BadHabit\LoginManagement\Auth;
 
 require_once __DIR__ . "/../../config/DotEnv.php";
 
-use BadHabit\LoginManagement\Model\DecodeSession;
-use BadHabit\LoginManagement\Domain\Decoded;
+use BadHabit\LoginManagement\Domain\Decode;
 use BadHabit\LoginManagement\Domain\Encode;
-use BadHabit\LoginManagement\Model\EncodeSession;
+use BadHabit\LoginManagement\Model\DecodedSession;
+use BadHabit\LoginManagement\Model\EncodedSession;
 use DotEnv;
 use Firebase\JWT\JWT;
 
@@ -53,7 +53,7 @@ class Handler
 
     }
 
-    public function encode(Encode $encode): EncodeSession
+    public function encode(Encode $encode): EncodedSession
     {
 
         /*
@@ -75,24 +75,26 @@ class Handler
             'exp' => $this->expireAt,
 
             // payload
-            'data' => $encode->data
+            'data' => $encode->userSession
         ];
 
         $this->jwt = JWT::encode($this->token, $this->jwt_secret);
-        $encodeSession = new EncodeSession();
-        $encodeSession->key = $this->jwt;
-        $encodeSession->expires = $this->expireAt;
-        $encodeSession->issued = $this->issuedAt;
-        $encodeSession->data = $encode->data;
-        return $encodeSession;
+
+        $encodedSession = new EncodedSession();
+        $encodedSession->key = $this->jwt;
+        $encodedSession->expireAt = $this->expireAt;
+        $encodedSession->issuedAt = $this->issuedAt;
+        $encodedSession->data = $encode;
+
+        return $encodedSession;
     }
 
-    public function decode(DecodeSession $decode): Decoded
+    public function decode(Decode $decode): DecodedSession
     {
-        $decode = JWT::decode($decode->token, $this->jwt_secret, ['HS256']);
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = $decode->data->user_id;
-        $decodeSession->role = $decode->data->role;
-        return $decodeSession;
+        $decoded = JWT::decode($decode->token, $this->jwt_secret, ['HS256']);
+        $decodedSession = new DecodedSession();
+        $decodedSession->payload = $decoded;
+
+        return $decodedSession;
     }
 }

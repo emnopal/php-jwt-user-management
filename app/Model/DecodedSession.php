@@ -2,7 +2,7 @@
 
 namespace BadHabit\LoginManagement\Model;
 
-class DecodeSession
+class DecodedSession
 {
-    public string $token;
+    public object $payload;
 }

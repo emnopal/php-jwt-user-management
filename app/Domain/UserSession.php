@@ -2,8 +2,9 @@
 
 namespace BadHabit\LoginManagement\Domain;
 
-class Decoded
+class UserSession
 {
     public string $user_id;
     public string $role;
+    public string $email;
 }

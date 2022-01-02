@@ -11,7 +11,6 @@ use BadHabit\LoginManagement\Model\UserLoginRequest;
 use BadHabit\LoginManagement\Model\UserPasswordRequest;
 use BadHabit\LoginManagement\Model\UserProfileUpdateRequest;
 use BadHabit\LoginManagement\Model\UserRegisterRequest;
-use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
 use PHPUnit\Framework\TestCase;
 

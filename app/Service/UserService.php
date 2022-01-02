@@ -109,10 +109,10 @@ class UserService
 
     public function updateProfile(UserProfileUpdateRequest $request): UserProfileUpdateResponse
     {
-        $this->validateUserProfileUpdateRequest($request);
 
         try {
             Database::beginTransaction();
+            $this->validateUserProfileUpdateRequest($request);
 
             $user = $this->userRepository->findById($request->username);
             if (!$user) {
@@ -150,10 +150,10 @@ class UserService
 
     public function updatePassword(UserPasswordRequest $request): UserPasswordResponse
     {
-        $this->validateUserPasswordUpdateRequest($request);
-
         try {
             Database::beginTransaction();
+
+            $this->validateUserPasswordUpdateRequest($request);
 
             $user = $this->userRepository->findById($request->username);
             if (!$user) {

@@ -4,10 +4,11 @@ namespace BadHabit\LoginManagement\Service;
 
 require_once __DIR__ . '/../Helper/helper.php';
 
-use BadHabit\LoginManagement\App\Handler;
+use BadHabit\LoginManagement\Auth\Handler;
 use BadHabit\LoginManagement\Config\Database;
+use BadHabit\LoginManagement\Domain\UserSession;
 use BadHabit\LoginManagement\Model\DecodeSession;
-use BadHabit\LoginManagement\Domain\Decoded;
+use BadHabit\LoginManagement\Domain\Decode;
 use BadHabit\LoginManagement\Domain\User;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
@@ -39,22 +40,24 @@ class SessionServiceTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodedSession = new Decoded();
-        $decodedSession->user_id = $user->username;
-        $decodedSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $session = $this->sessionService->create($decodedSession);
-        $token = $this->sessionRepository->getToken($decodedSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
 
         $this->expectOutputRegex("[X-BHB-SESSION: $key]");
 
-        $decode = new DecodeSession();
+        $decode = new Decode();
         $decode->token = $key;
         $decodedToken = $this->sessionRepository->decodeToken($decode);
 
-        self::assertEquals("test", $decodedToken->user_id);
-        self::assertEquals("user", $decodedToken->role);
+        self::assertEquals("test", $decodedToken->payload->data->user_id);
+        self::assertEquals("user", $decodedToken->payload->data->role);
+        self::assertEquals("user@mail.com", $decodedToken->payload->data->email);
     }
 
     public function testCreateSessionAdmin(): void
@@ -67,22 +70,24 @@ class SessionServiceTest extends TestCase
         $user->role = "admin";
         $this->userRepository->save($user);
 
-        $decodedSession = new Decoded();
-        $decodedSession->user_id = $user->username;
-        $decodedSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $session = $this->sessionService->create($decodedSession);
-        $token = $this->sessionRepository->getToken($decodedSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
 
         $this->expectOutputRegex("[X-BHB-SESSION: $key]");
 
-        $decode = new DecodeSession();
+        $decode = new Decode();
         $decode->token = $key;
         $decodedToken = $this->sessionRepository->decodeToken($decode);
 
-        self::assertEquals("test", $decodedToken->user_id);
-        self::assertEquals("admin", $decodedToken->role);
+        self::assertEquals("test", $decodedToken->payload->data->user_id);
+        self::assertEquals("admin", $decodedToken->payload->data->role);
+        self::assertEquals("user@mail.com", $decodedToken->payload->data->email);
     }
 
     public function testDestroySession(): void
@@ -95,12 +100,13 @@ class SessionServiceTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodedSession = new Decoded();
-        $decodedSession->user_id = $user->username;
-        $decodedSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $session = $this->sessionService->create($decodedSession);
-        $token = $this->sessionRepository->getToken($decodedSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
 
         $_COOKIE[SessionService::$COOKIE_NAME] = $key;
@@ -118,12 +124,13 @@ class SessionServiceTest extends TestCase
         $user->role = "admin";
         $this->userRepository->save($user);
 
-        $decodedSession = new Decoded();
-        $decodedSession->user_id = $user->username;
-        $decodedSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $session = $this->sessionService->create($decodedSession);
-        $token = $this->sessionRepository->getToken($decodedSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
 
         $_COOKIE[SessionService::$COOKIE_NAME] = $key;
@@ -141,18 +148,20 @@ class SessionServiceTest extends TestCase
         $user->role = "user";
         $this->userRepository->save($user);
 
-        $decodedSession = new Decoded();
-        $decodedSession->user_id = $user->username;
-        $decodedSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $session = $this->sessionService->create($decodedSession);
-        $token = $this->sessionRepository->getToken($decodedSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
 
         $_COOKIE[SessionService::$COOKIE_NAME] = $key;
         $user = $this->sessionService->current();
         self::assertEquals("test", $user->username);
         self::assertEquals("user", $user->role);
+        self::assertEquals("user@mail.com", $user->email);
     }
 
     public function testCurrentSessionAdmin(): void
@@ -165,18 +174,20 @@ class SessionServiceTest extends TestCase
         $user->role = "admin";
         $this->userRepository->save($user);
 
-        $decodedSession = new Decoded();
-        $decodedSession->user_id = $user->username;
-        $decodedSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $session = $this->sessionService->create($decodedSession);
-        $token = $this->sessionRepository->getToken($decodedSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
 
         $_COOKIE[SessionService::$COOKIE_NAME] = $key;
         $user = $this->sessionService->current();
         self::assertEquals("test", $user->username);
         self::assertEquals("admin", $user->role);
+        self::assertEquals("user@mail.com", $user->email);
     }
 
 }

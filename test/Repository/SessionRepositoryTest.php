@@ -2,10 +2,11 @@
 
 namespace BadHabit\LoginManagement\Repository;
 
-use BadHabit\LoginManagement\App\Handler;
-use BadHabit\LoginManagement\Model\DecodeSession;
-use BadHabit\LoginManagement\Domain\Decoded;
-use BadHabit\LoginManagement\Model\EncodeSession;
+use BadHabit\LoginManagement\Auth\Handler;
+use BadHabit\LoginManagement\Domain\UserSession;
+use BadHabit\LoginManagement\Model\DecodedSession;
+use BadHabit\LoginManagement\Domain\Decode;
+use BadHabit\LoginManagement\Model\EncodedSession;
 use BadHabit\LoginManagement\Service\SessionService;
 use PHPUnit\Framework\TestCase;
 
@@ -22,28 +23,31 @@ class SessionRepositoryTest extends TestCase
 
     public function testGetToken()
     {
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = 'test';
-        $decodeSession->role = 'user';
-        $encodeSession = $this->sessionRepository->getToken($decodeSession);
+        $userSession = new UserSession();
+        $userSession->user_id = 'test';
+        $userSession->role = 'user';
+        $userSession->email = "test@user.com";
+        $encodeSession = $this->sessionRepository->getToken($userSession);
 
-        self::assertInstanceOf(EncodeSession::class, $encodeSession);
+        self::assertInstanceOf(EncodedSession::class, $encodeSession);
     }
 
     public function testDecodeToken()
     {
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = 'test';
-        $decodeSession->role = 'user';
-        $encodeSession = $this->sessionRepository->getToken($decodeSession);
+        $userSession = new UserSession();
+        $userSession->user_id = 'test';
+        $userSession->role = 'user';
+        $userSession->email = "user@mail.com";
+        $encodeSession = $this->sessionRepository->getToken($userSession);
 
-        $decode = new DecodeSession();
+        $decode = new Decode();
         $decode->token = $encodeSession->key;
-        $decodeSession = $this->sessionRepository->decodeToken($decode);
+        $decoded = $this->sessionRepository->decodeToken($decode);
 
-        self::assertInstanceOf(Decoded::class, $decodeSession);
-        self::assertEquals('test', $decodeSession->user_id);
-        self::assertEquals('user', $decodeSession->role);
+        self::assertInstanceOf(DecodedSession::class, $decoded);
+        self::assertEquals('test', $decoded->payload->data->user_id);
+        self::assertEquals('user', $decoded->payload->data->role);
+        self::assertEquals('user@mail.com', $decoded->payload->data->email);
     }
 
 }

@@ -2,10 +2,12 @@
 
 namespace BadHabit\LoginManagement\App;
 
-use BadHabit\LoginManagement\Model\DecodeSession;
-use BadHabit\LoginManagement\Domain\Decoded;
+use BadHabit\LoginManagement\Auth\Handler;
+use BadHabit\LoginManagement\Domain\UserSession;
+use BadHabit\LoginManagement\Model\DecodedSession;
+use BadHabit\LoginManagement\Domain\Decode;
 use BadHabit\LoginManagement\Domain\Encode;
-use BadHabit\LoginManagement\Model\EncodeSession;
+use BadHabit\LoginManagement\Model\EncodedSession;
 use PHPUnit\Framework\TestCase;
 
 class HandlerTest extends TestCase
@@ -13,46 +15,50 @@ class HandlerTest extends TestCase
 
     public function testEncode()
     {
-        // Get Session of User
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = 'test';
-        $decodeSession->role = 'user';
+        // Set user session
+        $userSession = new UserSession();
+        $userSession->user_id = "test";
+        $userSession->email = "test@mail.com";
+        $userSession->role = "user";
 
         // Encode Session
         $encode = new Encode();
         $encode->iss = 'https://example.com';
-        $encode->data = $decodeSession;
+        $encode->userSession = $userSession;
 
         $handler = new Handler();
-        self::assertInstanceOf(EncodeSession::class, $handler->encode($encode));
-        self::assertEquals('test', $handler->encode($encode)->data->user_id);
-        self::assertEquals('user', $handler->encode($encode)->data->role);
+        self::assertInstanceOf(EncodedSession::class, $handler->encode($encode));
+        self::assertEquals($encode->iss, $handler->encode($encode)->data->iss);
+        self::assertEquals($userSession->user_id, $handler->encode($encode)->data->userSession->user_id);
+        self::assertEquals($userSession->email, $handler->encode($encode)->data->userSession->email);
+        self::assertEquals($userSession->role, $handler->encode($encode)->data->userSession->role);
     }
 
     public function testDecode()
     {
-        // Get Session of User
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = 'test';
-        $decodeSession->role = 'user';
+        // Set user session
+        $userSession = new UserSession();
+        $userSession->user_id = "test";
+        $userSession->email = "test@mail.com";
+        $userSession->role = "user";
 
         // Encode Session
         $encode = new Encode();
         $encode->iss = 'https://example.com';
-        $encode->data = $decodeSession;
+        $encode->userSession = $userSession;
 
         $handler = new Handler();
         $token = $handler->encode($encode);
 
-        $decode = new DecodeSession();
+        $decode = new Decode();
         $decode->token = $token->key;
 
-        $key = $handler->decode($decode);
+        $decoded = $handler->decode($decode);
 
-        self::assertInstanceOf(Decoded::class, $key);
-        self::assertEquals('test', $key->user_id);
-        self::assertEquals('user', $key->role);
+        self::assertInstanceOf(DecodedSession::class, $decoded);
+        self::assertEquals($encode->iss, $handler->encode($encode)->data->iss);
+        self::assertEquals($userSession->user_id, $decoded->payload->data->user_id);
+        self::assertEquals($userSession->email, $decoded->payload->data->email);
+        self::assertEquals($userSession->role, $decoded->payload->data->role);
     }
-
-
 }

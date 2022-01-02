@@ -4,10 +4,10 @@ namespace BadHabit\LoginManagement\Middleware;
 
 require_once __DIR__ . "/../Helper/helper.php";
 
-use BadHabit\LoginManagement\App\Handler;
+use BadHabit\LoginManagement\Auth\Handler;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Decoded;
 use BadHabit\LoginManagement\Domain\User;
+use BadHabit\LoginManagement\Domain\UserSession;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
 use BadHabit\LoginManagement\Service\SessionService;
@@ -53,12 +53,13 @@ class MustNotLoginMiddlewareTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = $user->username;
-        $decodeSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $this->sessionService->create($decodeSession);
-        $token = $this->sessionRepository->getToken($decodeSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $this->mustNotLoginMiddleware->before();
@@ -76,12 +77,13 @@ class MustNotLoginMiddlewareTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = $user->username;
-        $decodeSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $this->sessionService->create($decodeSession);
-        $token = $this->sessionRepository->getToken($decodeSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         $this->mustNotLoginMiddleware->before();

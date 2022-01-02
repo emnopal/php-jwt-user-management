@@ -2,7 +2,7 @@
 
 namespace BadHabit\LoginManagement\Middleware;
 
-use BadHabit\LoginManagement\App\Handler;
+use BadHabit\LoginManagement\Auth\Handler;
 use BadHabit\LoginManagement\App\View;
 use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Repository\SessionRepository;

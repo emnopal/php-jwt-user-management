@@ -4,10 +4,11 @@ namespace BadHabit\LoginManagement\Middleware;
 
 require_once __DIR__ . "/../Helper/helper.php";
 
-use BadHabit\LoginManagement\App\Handler;
+use BadHabit\LoginManagement\Auth\Handler;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Decoded;
+use BadHabit\LoginManagement\Domain\Decode;
 use BadHabit\LoginManagement\Domain\User;
+use BadHabit\LoginManagement\Domain\UserSession;
 use BadHabit\LoginManagement\Repository\SessionRepository;
 use BadHabit\LoginManagement\Repository\UserRepository;
 use BadHabit\LoginManagement\Service\SessionService;
@@ -51,12 +52,13 @@ class MustLoginMiddlewareTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = $user->username;
-        $decodeSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $this->sessionService->create($decodeSession);
-        $token = $this->sessionRepository->getToken($decodeSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
         $cookie_name = SessionService::$COOKIE_NAME;
         $_COOKIE[$cookie_name] = $key;
@@ -78,12 +80,13 @@ class MustLoginMiddlewareTest extends TestCase
 
         $this->userRepository->save($user);
 
-        $decodeSession = new Decoded();
-        $decodeSession->user_id = $user->username;
-        $decodeSession->role = $user->role;
+        $userSession = new UserSession();
+        $userSession->user_id = $user->username;
+        $userSession->role = $user->role;
+        $userSession->email = $user->email;
 
-        $this->sessionService->create($decodeSession);
-        $token = $this->sessionRepository->getToken($decodeSession);
+        $this->sessionService->create($userSession);
+        $token = $this->sessionRepository->getToken($userSession);
         $key = $token->key;
         $cookie_name = SessionService::$COOKIE_NAME;
         $_COOKIE[$cookie_name] = $key;

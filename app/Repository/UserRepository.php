@@ -2,7 +2,6 @@
 
 namespace BadHabit\LoginManagement\Repository;
 
-use BadHabit\LoginManagement\Config\Database;
 use BadHabit\LoginManagement\Domain\User;
 
 class UserRepository
