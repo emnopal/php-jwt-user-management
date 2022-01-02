@@ -4,6 +4,8 @@
 
 namespace BadHabit\LoginManagement\Config;
 
+require_once __DIR__. '/../../config/DatabaseConfig.php';
+
 class Database
 {
     private static ?\PDO $pdo = null;
@@ -13,7 +15,6 @@ class Database
         if (self::$pdo == null) {
 
             // If \PDO never created
-            require_once __DIR__ . "/../../config/database.php";
             $config = getDatabaseConfig();
             self::$pdo = new \PDO(
                 $config["database"][$env]["url"],

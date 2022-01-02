@@ -60,7 +60,7 @@ class AdminControllerTest extends TestCase
         $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         // This will redirect
-        // but redirect is giving a problem with PHPUnit Test
+        // but redirect is giving a problem with PHPUnit test
         // So we need to create a new function to create mock header
         $this->adminController->index();
         $this->expectOutputRegex("[X-BHB-SESSION: ]");
@@ -84,7 +84,7 @@ class AdminControllerTest extends TestCase
         $_POST['password'] = "test123";
 
         // This will redirect
-        // but redirect is giving a problem with PHPUnit Test
+        // but redirect is giving a problem with PHPUnit test
         // So we need to create a new function to create mock header
         $this->userController->postLogin();
         $this->expectOutputRegex("[X-BHB-SESSION: ]");
@@ -112,7 +112,7 @@ class AdminControllerTest extends TestCase
         $_COOKIE[SessionService::$COOKIE_NAME] = $token->key;
 
         // This will redirect
-        // but redirect is giving a problem with PHPUnit Test
+        // but redirect is giving a problem with PHPUnit test
         // So we need to create a new function to create mock header
         $this->adminController->index();
         $this->expectOutputRegex("[X-BHB-SESSION: ]");

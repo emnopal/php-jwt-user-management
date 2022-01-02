@@ -2,13 +2,11 @@
 
 namespace BadHabit\LoginManagement\Auth;
 
-require_once __DIR__ . "/../../config/DotEnv.php";
-
 use BadHabit\LoginManagement\Domain\Decode;
 use BadHabit\LoginManagement\Domain\Encode;
+use BadHabit\LoginManagement\Helper\DotEnv;
 use BadHabit\LoginManagement\Model\DecodedSession;
 use BadHabit\LoginManagement\Model\EncodedSession;
-use DotEnv;
 use Firebase\JWT\JWT;
 
 class Handler

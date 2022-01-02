@@ -45,7 +45,7 @@ class HomeControllerTest extends TestCase
         $user = new User();
         $user->username = "test";
         $user->password = "test";
-        $user->fullName = "Test User";
+        $user->fullName = "test User";
         $user->email = "test@gmail.com";
         $user->role = "user";
 

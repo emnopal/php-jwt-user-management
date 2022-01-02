@@ -1,8 +1,9 @@
 <?php
 
-require_once __DIR__ . "/DotEnv.php";
+use BadHabit\LoginManagement\Helper\DotEnv;
 
-function getDatabaseConfig(): array {
+function getDatabaseConfig(): array
+{
 
     $dotenv = new DotEnv(__DIR__ . "/../.env");
     $dotenv->load();
@@ -29,3 +30,4 @@ function getDatabaseConfig(): array {
         ]
     ];
 }
+

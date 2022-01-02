@@ -17,12 +17,12 @@
     },
     "autoload": {
         "psr-4": {
-            "BadHabit\\LoginManagement\\" : "app"
+            "BadHabit\\LoginManagement\\" : "app/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "BadHabit\\LoginManagement\\" : "test"
+            "BadHabit\\LoginManagement\\" : "test/"
         }
     }
 }

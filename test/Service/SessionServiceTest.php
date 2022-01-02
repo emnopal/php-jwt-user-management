@@ -34,7 +34,7 @@ class SessionServiceTest extends TestCase
     {
         $user = new User();
         $user->username = "test";
-        $user->fullName = "Test Account";
+        $user->fullName = "test Account";
         $user->password = "test123";
         $user->email = "user@mail.com";
         $user->role = "user";
@@ -64,7 +64,7 @@ class SessionServiceTest extends TestCase
     {
         $user = new User();
         $user->username = "test";
-        $user->fullName = "Test Account";
+        $user->fullName = "test Account";
         $user->password = "test123";
         $user->email = "user@mail.com";
         $user->role = "admin";
@@ -94,7 +94,7 @@ class SessionServiceTest extends TestCase
     {
         $user = new User();
         $user->username = "test";
-        $user->fullName = "Test Account";
+        $user->fullName = "test Account";
         $user->password = "test123";
         $user->email = "user@mail.com";
         $user->role = "user";
@@ -118,7 +118,7 @@ class SessionServiceTest extends TestCase
     {
         $user = new User();
         $user->username = "test";
-        $user->fullName = "Test Account";
+        $user->fullName = "test Account";
         $user->password = "test123";
         $user->email = "user@mail.com";
         $user->role = "admin";
@@ -142,7 +142,7 @@ class SessionServiceTest extends TestCase
     {
         $user = new User();
         $user->username = "test";
-        $user->fullName = "Test Account";
+        $user->fullName = "test Account";
         $user->password = "test123";
         $user->email = "user@mail.com";
         $user->role = "user";
@@ -168,7 +168,7 @@ class SessionServiceTest extends TestCase
     {
         $user = new User();
         $user->username = "test";
-        $user->fullName = "Test Account";
+        $user->fullName = "test Account";
         $user->password = "test123";
         $user->email = "user@mail.com";
         $user->role = "admin";

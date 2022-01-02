@@ -1,5 +1,7 @@
 <?php
 
+namespace BadHabit\LoginManagement\Helper;
+
 class DotEnv
 {
     /**

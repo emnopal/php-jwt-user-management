@@ -59,7 +59,7 @@ class UserControllerTest extends TestCase
         $user = $_POST['username'];
 
         // This is will redirect
-        // but redirect is giving a problem with PHPUnit Test
+        // but redirect is giving a problem with PHPUnit test
         // So we need to create a new function to create mock header
         $this->userController->postRegister();
         $this->expectOutputRegex("[User registered successfully]");
@@ -123,7 +123,7 @@ class UserControllerTest extends TestCase
         $_POST['password'] = "test123";
 
         // This is will redirect
-        // but redirect is giving a problem with PHPUnit Test
+        // but redirect is giving a problem with PHPUnit test
         // So we need to create a new function to create mock header
         $this->userController->postLogin();
         $this->expectOutputRegex("[X-BHB-SESSION: ]");

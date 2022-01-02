@@ -5,7 +5,6 @@ namespace BadHabit\LoginManagement\Controller;
 use BadHabit\LoginManagement\Auth\Handler;
 use BadHabit\LoginManagement\App\View;
 use BadHabit\LoginManagement\Config\Database;
-use BadHabit\LoginManagement\Domain\Decode;
 use BadHabit\LoginManagement\Domain\UserSession;
 use BadHabit\LoginManagement\Exception\ValidationException;
 use BadHabit\LoginManagement\Model\UserLoginRequest;
